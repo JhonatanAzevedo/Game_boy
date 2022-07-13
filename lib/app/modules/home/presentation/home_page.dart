@@ -20,7 +20,7 @@ class HomePage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: (() {
-                Modular.to.pushNamed("/snake");
+                Modular.to.pushNamed("/snake/");
               }),
               child: const Text('Snake'),
             ),
