@@ -52,6 +52,7 @@ class _SnakePageState extends State<SnakePage> {
   }
 
   void startGame() {
+    _gameController.text = '';
     gameHasStarted = true;
     Timer.periodic(
       const Duration(milliseconds: 200),
