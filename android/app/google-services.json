@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "174446345670",
+    "project_id": "gameboy-f3d2a",
+    "storage_bucket": "gameboy-f3d2a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:174446345670:android:e82f1d87e9794a5cc746c7",
+        "android_client_info": {
+          "package_name": "com.example.game_boy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "174446345670-j5d3psfihe9vf71jv7vpt6enfk0akga5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwdELacDF8d-v6u_PluKs-6BYjyHEs1-4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "174446345670-j5d3psfihe9vf71jv7vpt6enfk0akga5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
