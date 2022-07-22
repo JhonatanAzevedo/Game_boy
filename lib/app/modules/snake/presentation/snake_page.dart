@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:game_boy/app/modules/snake/presentation/widgets/blank_pixel.dart';
 import 'package:game_boy/app/modules/snake/presentation/widgets/food_pixel.dart';
+import 'package:game_boy/app/modules/snake/presentation/widgets/highscore_tile.dart';
 import 'package:game_boy/app/modules/snake/presentation/widgets/snake_pixel.dart';
 
 class SnakePage extends StatefulWidget {
@@ -23,7 +25,31 @@ class _SnakePageState extends State<SnakePage> {
   int foodPosition = 55;
   int currentScore = 0;
   bool gameHasStarted = false;
+  List<String> highscoreDocsId = [];
+  late final Future? letsGetDocids;
+  final _gameController = TextEditingController();
   var currentDirection = snake_Direction.RIGHT;
+
+  @override
+  void initState() {
+    letsGetDocids = getDocId();
+    super.initState();
+  }
+
+  Future getDocId() async {
+    await FirebaseFirestore.instance
+        .collection('highscores')
+        .orderBy('score', descending: true)
+        .limit(10)
+        .get()
+        .then(
+          (value) => value.docs.forEach(
+            (element) {
+              highscoreDocsId.add(element.reference.id);
+            },
+          ),
+        );
+  }
 
   void startGame() {
     gameHasStarted = true;
@@ -46,17 +72,19 @@ class _SnakePageState extends State<SnakePage> {
                         Text(
                           'Your Score is: ' + currentScore.toString(),
                         ),
-                        const TextField(
-                          decoration: InputDecoration(hintText: 'Enter name'),
+                        TextField(
+                          controller: _gameController,
+                          decoration:
+                              const InputDecoration(hintText: 'Enter name'),
                         )
                       ],
                     ),
                     actions: [
                       MaterialButton(
                         onPressed: () {
+                          submitScore();
                           Modular.to.pop();
                           newGame();
-                          submitScore();
                         },
                         child: const Text('Submit'),
                         color: Colors.pink,
@@ -72,9 +100,19 @@ class _SnakePageState extends State<SnakePage> {
     );
   }
 
-  void submitScore() {}
+  void submitScore() {
+    var database = FirebaseFirestore.instance;
+    database.collection('highscores').add(
+      {
+        "name": _gameController.text,
+        "score": currentScore,
+      },
+    );
+  }
 
-  void newGame() {
+  Future newGame() async {
+    highscoreDocsId = [];
+    await getDocId();
     setState(
       () {
         snakePosition = [0, 1, 2];
@@ -162,28 +200,43 @@ class _SnakePageState extends State<SnakePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Current Score',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Current Score',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                        ),
                       ),
-                    ),
-                    Text(
-                      currentScore.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 30,
+                      Text(
+                        currentScore.toString(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 30,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                const Text(
-                  'highscores..',
-                  style: TextStyle(color: Colors.white),
+                Expanded(
+                  child: gameHasStarted
+                      ? Container()
+                      : FutureBuilder(
+                          future: letsGetDocids,
+                          builder: ((context, snapshot) {
+                            return ListView.builder(
+                              itemCount: highscoreDocsId.length,
+                              itemBuilder: ((context, index) {
+                                return HighscoreTile(
+                                  documentId: highscoreDocsId[index],
+                                );
+                              }),
+                            );
+                          }),
+                        ),
                 ),
               ],
             ),
