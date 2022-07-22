@@ -61,38 +61,7 @@ class _SnakePageState extends State<SnakePage> {
             moveSnake();
             if (gameOver()) {
               timer.cancel();
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text('Game Over '),
-                    content: Column(
-                      children: [
-                        Text(
-                          'Your Score is: ' + currentScore.toString(),
-                        ),
-                        TextField(
-                          controller: _gameController,
-                          decoration:
-                              const InputDecoration(hintText: 'Enter name'),
-                        )
-                      ],
-                    ),
-                    actions: [
-                      MaterialButton(
-                        onPressed: () {
-                          submitScore();
-                          Modular.to.pop();
-                          newGame();
-                        },
-                        child: const Text('Submit'),
-                        color: Colors.pink,
-                      ),
-                    ],
-                  );
-                },
-              );
+              _showDialog();
             }
           },
         );
@@ -291,6 +260,43 @@ class _SnakePageState extends State<SnakePage> {
           ),
         ],
       ),
+    );
+  }
+
+  _showDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Game Over '),
+          content: SizedBox(
+            height: 100,
+            child: Column(
+              children: [
+                Text(
+                  'Your Score is: ' + currentScore.toString(),
+                ),
+                TextField(
+                  controller: _gameController,
+                  decoration: const InputDecoration(hintText: 'Enter name'),
+                )
+              ],
+            ),
+          ),
+          actions: [
+            MaterialButton(
+              onPressed: () {
+                submitScore();
+                Modular.to.pop();
+                newGame();
+              },
+              child: const Text('Submit'),
+              color: Colors.pink,
+            ),
+          ],
+        );
+      },
     );
   }
 }
